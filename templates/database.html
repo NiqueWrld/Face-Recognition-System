@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database - Face Recognition System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0ea5e9',
+                        secondary: '#0284c7',
+                        accent: '#f8fafc',
+                        dark: '#1e293b'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-accent h-screen overflow-hidden flex flex-col">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-primary to-secondary shadow-lg">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+                        <i class="fas fa-database text-lg text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-white">Database Management</h1>
+                        <p class="text-sky-100 text-xs">Manage Registered Identities</p>
+                    </div>
+                </div>
+                <a href="/" class="inline-flex items-center px-3 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors text-sm">
+                    <i class="fas fa-home mr-2"></i>
+                    Home
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 px-4 py-4 overflow-hidden">
+        <!-- Stats Bar -->
+        <div class="bg-white rounded-lg shadow-sm border border-sky-100 p-4 mb-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-6">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                            <i class="fas fa-users text-primary text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-medium text-gray-600">Total Registered</p>
+                            <p class="text-lg font-bold text-primary">{{ known_faces|length }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-green-50 rounded-full flex items-center justify-center">
+                            <i class="fas fa-check-circle text-green-600 text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-medium text-gray-600">System Status</p>
+                            <p class="text-sm font-semibold text-green-600">Active</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-3">
+                    <button onclick="location.reload()" class="inline-flex items-center px-3 py-2 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors text-sm">
+                        <i class="fas fa-sync-alt mr-2"></i>
+                        Refresh
+                    </button>
+                    <a href="/register" class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-primary to-secondary text-white rounded-lg hover:shadow-lg transition-all duration-200 text-sm">
+                        <i class="fas fa-plus mr-2"></i>
+                        Add New
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Card -->
+        <div class="bg-white rounded-2xl shadow-sm border border-sky-100 overflow-hidden flex-1 flex flex-col">
+            <!-- Header -->
+            <div class="p-4 bg-gradient-to-r from-sky-50 to-blue-50 border-b border-sky-100">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-lg font-semibold text-dark flex items-center">
+                        <i class="fas fa-list text-primary mr-3"></i>
+                        Registered Identities
+                    </h2>
+                    <div class="flex items-center space-x-2">
+                        <span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-medium">
+                            {{ known_faces|length }} Active
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Content -->
+            <div class="flex-1 p-4 overflow-hidden">
+                {% if known_faces %}
+                    <div class="h-full overflow-y-auto">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
+                            {% for name in known_faces %}
+                                <div class="group bg-gray-50 hover:bg-white rounded-lg p-4 text-center border hover:border-primary/20 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                                    <div class="relative">
+                                        <div class="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-full mx-auto mb-3 flex items-center justify-center text-white text-xl font-bold shadow-md group-hover:shadow-lg transition-shadow">
+                                            {{ name[0].upper() }}
+                                        </div>
+                                        <div class="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+                                    </div>
+                                    <h3 class="font-semibold text-dark mb-3 truncate text-sm">{{ name }}</h3>
+                                    <div class="space-y-2">
+                                        <div class="flex items-center justify-center space-x-1 text-xs text-gray-600">
+                                            <i class="fas fa-calendar-alt"></i>
+                                            <span>Registered</span>
+                                        </div>
+                                        <button onclick="deleteFace(event, '{{ name }}')" class="w-full inline-flex items-center justify-center px-3 py-2 bg-red-50 text-red-600 text-xs rounded-md hover:bg-red-100 transition-colors border border-red-200">
+                                            <i class="fas fa-trash-alt mr-1"></i>
+                                            Remove
+                                        </button>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="h-full flex items-center justify-center">
+                        <div class="text-center py-12 bg-gradient-to-br from-gray-50 to-sky-50 rounded-lg border border-sky-100 max-w-md">
+                            <div class="inline-flex items-center justify-center w-20 h-20 bg-primary/10 rounded-full mb-6">
+                                <i class="fas fa-user-slash text-3xl text-primary/60"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold text-dark mb-3">No Registered Faces</h3>
+                            <p class="text-gray-600 mb-6 text-sm">Your face recognition database is empty. Start by registering your first identity.</p>
+                            <a href="/register" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-lg hover:shadow-lg transition-all duration-200 transform hover:-translate-y-1">
+                                <i class="fas fa-plus mr-2"></i>
+                                Register First Face
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-4 border-t border-sky-100 bg-white/50">
+        <div class="px-4 text-center">
+            <p class="text-gray-600 text-xs">
+                © 2025 Face Recognition System | Powered by AI & OpenCV
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        function deleteFace(event, name) {
+            if (confirm(`Are you sure you want to remove "${name}" from the system?`)) {
+                // Add loading state
+                event.target.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Removing...';
+                event.target.disabled = true;
+                
+                fetch(`/delete_face/${name}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Success feedback
+                        event.target.innerHTML = '<i class="fas fa-check mr-1"></i>Removed';
+                        event.target.className = 'w-full inline-flex items-center justify-center px-3 py-2 bg-green-100 text-green-700 text-xs rounded-md border border-green-200';
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        alert('Error: ' + data.message);
+                        // Reset button
+                        event.target.innerHTML = '<i class="fas fa-trash-alt mr-1"></i>Remove';
+                        event.target.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    alert('Error: ' + error);
+                    // Reset button
+                    event.target.innerHTML = '<i class="fas fa-trash-alt mr-1"></i>Remove';
+                    event.target.disabled = false;
+                });
+            }
+        }
+
+        // Add smooth scroll behavior
+        document.documentElement.style.scrollBehavior = 'smooth';
+    </script>
+</body>
+</html>

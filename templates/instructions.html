@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Instructions - Face Recognition System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0ea5e9',
+                        secondary: '#0284c7',
+                        accent: '#f8fafc',
+                        dark: '#1e293b'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-accent h-screen overflow-hidden flex flex-col">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-primary to-secondary shadow-lg">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+                        <i class="fas fa-info-circle text-lg text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-white">Registration Instructions</h1>
+                        <p class="text-sky-100 text-xs">Complete Guide to Face Registration</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <a href="/register" class="inline-flex items-center px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm">
+                        <i class="fas fa-user-plus mr-2"></i>
+                        Start Registration
+                    </a>
+                    <a href="/" class="inline-flex items-center px-3 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors text-sm">
+                        <i class="fas fa-home mr-2"></i>
+                        Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 px-4 py-2 overflow-hidden">
+        <!-- Main Card -->
+        <div class="bg-white rounded-2xl shadow-sm border border-sky-100 overflow-hidden h-full flex flex-col">
+            <!-- Instructions Content -->
+            <div class="flex-1 p-4 overflow-y-auto">
+                <!-- Overview Section -->
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-dark mb-4 flex items-center">
+                        <i class="fas fa-bullseye text-primary mr-3"></i>
+                        Registration Overview
+                    </h2>
+                    <div class="bg-gradient-to-r from-blue-50 to-sky-50 rounded-lg p-4 border border-blue-200">
+                        <p class="text-gray-700 leading-relaxed">
+                            Our face registration system uses advanced AI to capture and store your facial features for accurate recognition. 
+                            The process is completely automated and takes about 2-3 minutes to complete. Follow the guide below for the best results.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Step-by-Step Guide -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-white rounded-lg p-6 border border-sky-100 shadow-sm">
+                        <h3 class="text-xl font-semibold text-primary mb-4 flex items-center">
+                            <i class="fas fa-list-ol text-lg mr-3"></i>
+                            Registration Steps
+                        </h3>
+                        <ol class="space-y-4">
+                            <li class="flex items-start">
+                                <span class="bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-4 mt-1">1</span>
+                                <div>
+                                    <h4 class="font-semibold text-dark">Enter Full Name</h4>
+                                    <p class="text-sm text-gray-600">Type the person's complete name exactly as it should appear in the system</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-4 mt-1">2</span>
+                                <div>
+                                    <h4 class="font-semibold text-dark">Start Photo Capture</h4>
+                                    <p class="text-sm text-gray-600">Click "Next" to activate the camera and begin the automated photo capture process</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-4 mt-1">3</span>
+                                <div>
+                                    <h4 class="font-semibold text-dark">Position Your Face</h4>
+                                    <p class="text-sm text-gray-600">Center your face in the camera view and follow the on-screen positioning guidance</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-4 mt-1">4</span>
+                                <div>
+                                    <h4 class="font-semibold text-dark">Automatic Capture</h4>
+                                    <p class="text-sm text-gray-600">System captures 3 high-quality photos automatically when optimal conditions are detected</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-4 mt-1">5</span>
+                                <div>
+                                    <h4 class="font-semibold text-dark">Complete Registration</h4>
+                                    <p class="text-sm text-gray-600">Registration completes automatically after duplicate checking and processing</p>
+                                </div>
+                            </li>
+                        </ol>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg p-6 border border-sky-100 shadow-sm">
+                        <h3 class="text-xl font-semibold text-primary mb-4 flex items-center">
+                            <i class="fas fa-camera text-lg mr-3"></i>
+                            Photo Requirements
+                        </h3>
+                        <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <i class="fas fa-user text-primary text-lg mr-4 mt-1"></i>
+                                <div>
+                                    <h4 class="font-semibold text-dark">Single Person Only</h4>
+                                    <p class="text-sm text-gray-600">Ensure only one face is visible in the camera frame during capture</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-expand-arrows-alt text-primary text-lg mr-4 mt-1"></i>
+                                <div>
+                                    <h4 class="font-semibold text-dark">Optimal Face Size</h4>
+                                    <p class="text-sm text-gray-600">Position yourself at arm's length from the camera - not too close or too far</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-sun text-primary text-lg mr-4 mt-1"></i>
+                                <div>
+                                    <h4 class="font-semibold text-dark">Good Lighting</h4>
+                                    <p class="text-sm text-gray-600">Use natural light or bright room lighting, avoid shadows on your face</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-hand-paper text-primary text-lg mr-4 mt-1"></i>
+                                <div>
+                                    <h4 class="font-semibold text-dark">Stay Still</h4>
+                                    <p class="text-sm text-gray-600">Hold still when the green "Ready" indicator appears for best quality</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-shield-alt text-primary text-lg mr-4 mt-1"></i>
+                                <div>
+                                    <h4 class="font-semibold text-dark">Duplicate Prevention</h4>
+                                    <p class="text-sm text-gray-600">Each person can only be registered once - system prevents duplicate registrations</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Visual Indicators Guide -->
+                <div class="bg-white rounded-lg p-6 border border-sky-100 shadow-sm mb-6">
+                    <h3 class="text-xl font-semibold text-primary mb-4 flex items-center">
+                        <i class="fas fa-eye text-lg mr-3"></i>
+                        Visual Indicators Guide
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="flex items-center p-3 bg-green-50 rounded-lg border border-green-200">
+                            <div class="w-6 h-6 bg-green-500 rounded border-2 border-green-500 mr-3"></div>
+                            <div>
+                                <p class="font-semibold text-green-800">Green Solid</p>
+                                <p class="text-xs text-green-600">Perfect! Photo will be captured</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center p-3 bg-orange-50 rounded-lg border border-orange-200">
+                            <div class="w-6 h-6 border-2 border-dashed border-orange-500 mr-3"></div>
+                            <div>
+                                <p class="font-semibold text-orange-800">Orange Dashed</p>
+                                <p class="text-xs text-orange-600">Needs minor adjustment</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center p-3 bg-red-50 rounded-lg border border-red-200">
+                            <div class="w-6 h-6 border-2 border-dashed border-red-500 mr-3"></div>
+                            <div>
+                                <p class="font-semibold text-red-800">Red Dashed</p>
+                                <p class="text-xs text-red-600">Invalid position/quality</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center p-3 bg-red-50 rounded-lg border border-red-200">
+                            <div class="w-6 h-6 bg-red-500 rounded border-2 border-red-500 mr-3"></div>
+                            <div>
+                                <p class="font-semibold text-red-800">Red "DUPLICATE"</p>
+                                <p class="text-xs text-red-600">Face already registered</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Troubleshooting Tips -->
+                <div class="bg-white rounded-lg p-6 border border-sky-100 shadow-sm mb-6">
+                    <h3 class="text-xl font-semibold text-primary mb-4 flex items-center">
+                        <i class="fas fa-tools text-lg mr-3"></i>
+                        Troubleshooting Tips
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="font-semibold text-dark mb-2 flex items-center">
+                                <i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>
+                                Common Issues
+                            </h4>
+                            <ul class="space-y-2 text-sm text-gray-700">
+                                <li>• Camera not working: Check browser permissions</li>
+                                <li>• Face not detected: Ensure good lighting</li>
+                                <li>• Multiple faces: Remove other people from frame</li>
+                                <li>• Poor quality: Move to better lit area</li>
+                                <li>• Duplicate error: Person already registered</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-dark mb-2 flex items-center">
+                                <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+                                Best Practices
+                            </h4>
+                            <ul class="space-y-2 text-sm text-gray-700">
+                                <li>• Use Chrome or Firefox browser</li>
+                                <li>• Position near a window for natural light</li>
+                                <li>• Remove glasses if they cause glare</li>
+                                <li>• Face the camera directly</li>
+                                <li>• Keep a neutral expression</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Start Section -->
+                <div class="text-center">
+                    <div class="bg-gradient-to-r from-primary to-secondary rounded-lg p-6 text-white">
+                        <h3 class="text-2xl font-bold mb-2">Ready to Start?</h3>
+                        <p class="mb-4 opacity-90">Follow these instructions for a successful registration process</p>
+                        <a href="/register" class="inline-flex items-center px-6 py-3 bg-white text-primary font-semibold rounded-lg hover:bg-gray-50 transition-colors shadow-lg">
+                            <i class="fas fa-user-plus mr-2"></i>
+                            Begin Face Registration
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-4 border-t border-sky-100 bg-white/50">
+        <div class="px-4 text-center">
+            <p class="text-gray-600 text-xs">
+                © 2025 Face Recognition System | Powered by AI & OpenCV
+            </p>
+        </div>
+    </footer>
+</body>
+</html>

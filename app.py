@@ -379,6 +379,11 @@ def register_page():
     """Registration page"""
     return render_template('register.html')
 
+@app.route('/instructions')
+def instructions_page():
+    """Registration instructions page"""
+    return render_template('instructions.html')
+
 @app.route('/register_multiple', methods=['POST'])
 def register_multiple():
     """Register a face using multiple images for better accuracy"""
@@ -430,6 +435,15 @@ def register_multiple():
 def camera_test():
     """Camera test page"""
     return render_template('camera.html')
+
+@app.route('/database')
+def database():
+    """Database management page"""
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    known_faces = list(recognizer.known_faces.keys())
+    return render_template('database.html', 
+                         known_faces=known_faces, 
+                         current_time=current_time)
 
 @app.route('/delete_face/<name>', methods=['POST'])
 def delete_face(name):
