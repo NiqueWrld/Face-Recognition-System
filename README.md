@@ -51,24 +51,28 @@ A modern, lightweight web-based face recognition system built with Flask and Ope
 - **JSON Storage**: Simple file-based data persistence
 - **Export Capabilities**: CSV export for attendance records
 
-## 🚀 Quick Start
+## 🚀 Installation Guide
 
 ### Prerequisites
-- Python 3.7+
-- Web camera (for live recognition)
-- Modern web browser
+- **Python 3.7+** - [Download Python](https://www.python.org/downloads/)
+- **Web camera** (for live recognition)
+- **Modern web browser** (Chrome, Firefox, Safari, Edge)
+- **Git** (optional) - [Download Git](https://git-scm.com/downloads)
 
-### Installation
+### Option 1: Quick Installation (Recommended)
 
-1. **Clone the repository**
+1. **Download or Clone the repository**
    ```bash
+   # Using Git
    git clone https://github.com/yourusername/face-recognition-system.git
    cd face-recognition-system
+   
+   # Or download ZIP and extract
    ```
 
-2. **Install dependencies**
+2. **Install all dependencies at once**
    ```bash
-   pip install flask opencv-python pillow numpy
+   pip install -r requirements.txt
    ```
 
 3. **Run the application**
@@ -76,10 +80,140 @@ A modern, lightweight web-based face recognition system built with Flask and Ope
    python app.py
    ```
 
-4. **Open your browser**
+4. **Open your browser and navigate to**
    ```
    http://localhost:5001
    ```
+
+### Option 2: Manual Installation
+
+1. **Create project directory**
+   ```bash
+   mkdir face-recognition-system
+   cd face-recognition-system
+   ```
+
+2. **Download project files**
+   - Download all files from the repository
+   - Place them in your project directory
+
+3. **Install dependencies individually**
+   ```bash
+   pip install flask==3.0.0
+   pip install opencv-python==4.8.1.78
+   pip install pillow==10.1.0
+   pip install numpy==1.24.3
+   ```
+
+4. **Verify installation**
+   ```bash
+   python -c "import cv2, flask, PIL, numpy; print('All dependencies installed successfully!')"
+   ```
+
+5. **Run the application**
+   ```bash
+   python app.py
+   ```
+
+### Option 3: Virtual Environment Setup (Best Practice)
+
+1. **Create virtual environment**
+   ```bash
+   # Windows
+   python -m venv face-recognition-env
+   face-recognition-env\Scripts\activate
+   
+   # macOS/Linux
+   python3 -m venv face-recognition-env
+   source face-recognition-env/bin/activate
+   ```
+
+2. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Run the application**
+   ```bash
+   python app.py
+   ```
+
+4. **Deactivate environment when done**
+   ```bash
+   deactivate
+   ```
+
+### Troubleshooting Installation
+
+#### Common Issues and Solutions
+
+**1. OpenCV Installation Problems**
+```bash
+# If opencv-python fails to install
+pip install --upgrade pip
+pip install opencv-python-headless==4.8.1.78
+```
+
+**2. Permission Errors**
+```bash
+# Windows: Run as Administrator or use --user flag
+pip install --user -r requirements.txt
+
+# macOS/Linux: Use sudo or --user flag
+sudo pip install -r requirements.txt
+# OR
+pip install --user -r requirements.txt
+```
+
+**3. Python Version Issues**
+```bash
+# Check Python version
+python --version
+
+# Use specific Python version if multiple installed
+python3.9 app.py
+```
+
+**4. Camera Access Issues**
+- **Windows**: Check Windows Privacy Settings → Camera → Allow apps to access camera
+- **macOS**: System Preferences → Security & Privacy → Camera → Allow browser access
+- **Linux**: Ensure user is in video group: `sudo usermod -a -G video $USER`
+
+**5. Port Already in Use**
+```bash
+# Change port in app.py or kill existing process
+# Windows
+netstat -ano | findstr :5001
+taskkill /PID <process_id> /F
+
+# macOS/Linux
+lsof -ti:5001 | xargs kill -9
+```
+
+### Verification Steps
+
+1. **Check if server is running**
+   - Look for message: "Running on http://127.0.0.1:5001"
+   - No error messages in terminal
+
+2. **Test camera access**
+   - Navigate to http://localhost:5001
+   - Click "Register Face" 
+   - Camera should activate and show video feed
+
+3. **Test face detection**
+   - Position face in camera view
+   - Green rectangle should appear around detected faces
+
+### System Requirements
+
+| Component | Minimum | Recommended |
+|-----------|---------|-------------|
+| RAM | 2GB | 4GB+ |
+| CPU | Dual-core 2GHz | Quad-core 2.5GHz+ |
+| Storage | 100MB | 500MB+ |
+| Camera | 480p | 720p+ |
+| Browser | Chrome 60+ | Latest Chrome/Firefox |
 
 ## 📖 User Guide
 
