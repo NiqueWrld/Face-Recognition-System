@@ -3,46 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real-Time Recognition - Simple Face Recognition</title>
+    <title>Attendance Register - Face Recognition System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0ea5e9',
+                        secondary: '#0284c7',
+                        accent: '#f8fafc',
+                        dark: '#1e293b'
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-        }
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .camera-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-        }
-        .video-container {
-            position: relative;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        #video {
-            width: 640px;
-            height: 480px;
-            max-width: 100%;
-            display: block;
-        }
         .face-overlay {
             position: absolute;
             border: 3px solid #00ff00;
@@ -59,105 +37,6 @@
             border-radius: 3px;
             white-space: nowrap;
         }
-        .controls {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        .btn {
-            padding: 12px 24px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .btn:hover {
-            background: #5a67d8;
-        }
-        .btn:disabled {
-            background: #a0aec0;
-            cursor: not-allowed;
-        }
-        .btn-success {
-            background: #48bb78;
-        }
-        .btn-success:hover {
-            background: #38a169;
-        }
-        .btn-danger {
-            background: #e53e3e;
-        }
-        .btn-danger:hover {
-            background: #c53030;
-        }
-        .btn-secondary {
-            background: #718096;
-        }
-        .btn-secondary:hover {
-            background: #4a5568;
-        }
-        .status {
-            text-align: center;
-            margin: 20px 0;
-            padding: 15px;
-            border-radius: 6px;
-        }
-        .status.info {
-            background: #ebf8ff;
-            border: 1px solid #90cdf4;
-            color: #2c5282;
-        }
-        .status.success {
-            background: #f0fff4;
-            border: 1px solid #9ae6b4;
-            color: #276749;
-        }
-        .status.error {
-            background: #fed7d7;
-            border: 1px solid #feb2b2;
-            color: #c53030;
-        }
-        .results {
-            margin-top: 20px;
-            padding: 15px;
-            background: #f7fafc;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-        }
-        .face-result {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            margin: 5px 0;
-            background: white;
-            border-radius: 6px;
-            border: 1px solid #e2e8f0;
-        }
-        .face-info {
-            flex-grow: 1;
-        }
-        .face-name {
-            font-weight: bold;
-            color: #2d3748;
-        }
-        .face-confidence {
-            font-size: 14px;
-            color: #718096;
-        }
-        .confidence-bar {
-            width: 100px;
-            height: 8px;
-            background: #e2e8f0;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-left: 15px;
-        }
         .confidence-fill {
             height: 100%;
             background: linear-gradient(90deg, #e53e3e 0%, #ed8936 50%, #48bb78 100%);
@@ -168,33 +47,126 @@
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h1>🎥 Real-Time Face Recognition</h1>
-        
-        <div class="camera-container">
-            <div class="video-container">
-                <video id="video" autoplay muted playsinline></video>
-                <canvas id="canvas"></canvas>
-                <div id="faceOverlays"></div>
-            </div>
-            
-            <div class="controls">
-                <button id="startCamera" class="btn btn-success">Start Camera</button>
-                <button id="stopCamera" class="btn btn-danger" disabled>Stop Camera</button>
-                <a href="/" class="btn btn-secondary">Back to Home</a>
-            </div>
-            
-            <div id="status" class="status info">
-                Click "Start Camera" to begin real-time face recognition
-            </div>
-            
-            <div id="results" class="results" style="display: none;">
-                <h3>Recognition Results:</h3>
-                <div id="faceResults"></div>
+<body class="bg-accent h-screen overflow-hidden flex flex-col">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-primary to-secondary shadow-lg">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+                        <i class="fas fa-video text-lg text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-white">Attendance Register</h1>
+                        <p class="text-sky-100 text-xs">Real-time Attendance Tracking</p>
+                    </div>
+                </div>
+                <a href="/" class="inline-flex items-center px-3 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors text-sm">
+                    <i class="fas fa-home mr-2"></i>
+                    Home
+                </a>
             </div>
         </div>
-    </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 px-4 py-2 overflow-hidden">
+        <!-- Main Card -->
+        <div class="bg-white rounded-2xl shadow-sm border border-sky-100 overflow-hidden h-full flex flex-col">
+            <!-- Control Panel -->
+            <div class="p-3 bg-gradient-to-r from-sky-50 to-blue-50 border-b border-sky-100">
+                <div class="flex flex-wrap items-center justify-center gap-2">
+                    <button id="startCamera" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white font-medium rounded-lg hover:shadow-lg transition-all duration-200 text-sm">
+                        <i class="fas fa-play mr-2"></i>
+                        Start Camera
+                    </button>
+                    <button id="stopCamera" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white font-medium rounded-lg hover:shadow-lg transition-all duration-200 text-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        <i class="fas fa-stop mr-2"></i>
+                        Stop Camera
+                    </button>
+                    <button id="takeRegister" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-primary to-secondary text-white font-medium rounded-lg hover:shadow-lg transition-all duration-200 text-sm">
+                        <i class="fas fa-clipboard-check mr-2"></i>
+                        Take Register
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Main Content Area -->
+            <div class="flex-1 p-2 overflow-hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 h-full">
+                    <!-- Left Side - Camera Preview -->
+                    <div class="flex flex-col h-full">
+                        <h3 class="text-lg font-semibold text-dark flex items-center mb-2">
+                            <i class="fas fa-video text-primary mr-3"></i>
+                            Camera Preview
+                        </h3>
+                        <div class="flex-1 bg-gray-900 rounded-lg overflow-hidden shadow-lg border border-gray-200 relative min-h-0 max-h-full">
+                            <video id="video" autoplay muted playsinline class="w-full h-full object-cover transform-gpu"></video>
+                            <canvas id="canvas" class="absolute top-0 left-0 w-full h-full pointer-events-none opacity-0"></canvas>
+                            <div id="faceOverlays" class="absolute inset-0 pointer-events-none"></div>
+                        </div>
+                        
+                        <!-- Status Display -->
+                        <div id="status" class="flex items-center justify-center p-2 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 mt-2 text-sm">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            <span class="font-medium">Click "Start Camera" to begin attendance tracking</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Side - Attendance List -->
+                    <div class="flex flex-col h-full">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-lg font-semibold text-dark flex items-center">
+                                <i class="fas fa-users text-primary mr-3"></i>
+                                Present Today
+                            </h3>
+                            <span id="attendanceCount" class="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">
+                                0 Present
+                            </span>
+                        </div>
+                        
+                        <!-- Attendance List -->
+                        <div class="flex-1 bg-gray-50 rounded-lg border border-gray-200 overflow-hidden min-h-0">
+                            <div id="attendanceList" class="p-2 space-y-1 h-full overflow-y-auto">
+                                <div class="text-center py-8 text-gray-500">
+                                    <i class="fas fa-clipboard-list text-3xl mb-3 opacity-50"></i>
+                                    <p class="font-medium text-sm">No attendance marked yet</p>
+                                    <p class="text-xs">Start camera to begin tracking</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Quick Actions -->
+                        <div class="bg-white rounded-lg border border-gray-200 p-2 mt-2">
+                            <h4 class="font-semibold text-gray-800 mb-2 flex items-center text-sm">
+                                <i class="fas fa-bolt text-yellow-500 mr-2"></i>
+                                Quick Actions
+                            </h4>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button id="clearAttendance" class="flex items-center justify-center px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors border border-red-200 text-xs font-medium">
+                                    <i class="fas fa-trash mr-1"></i>
+                                    Clear
+                                </button>
+                                <button id="exportAttendance" class="flex items-center justify-center px-3 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors border border-green-200 text-xs font-medium">
+                                    <i class="fas fa-download mr-1"></i>
+                                    Export
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-4 border-t border-sky-100 bg-white/50">
+        <div class="px-4 text-center">
+            <p class="text-gray-600 text-xs">
+                © 2025 Face Recognition System | Powered by AI & OpenCV
+            </p>
+        </div>
+    </footer>
 
     <script>
         const video = document.getElementById('video');
@@ -202,42 +174,60 @@
         const ctx = canvas.getContext('2d');
         const startBtn = document.getElementById('startCamera');
         const stopBtn = document.getElementById('stopCamera');
+        const takeRegisterBtn = document.getElementById('takeRegister');
+        const clearAttendanceBtn = document.getElementById('clearAttendance');
+        const exportAttendanceBtn = document.getElementById('exportAttendance');
         const statusDiv = document.getElementById('status');
-        const resultsDiv = document.getElementById('results');
-        const faceResultsDiv = document.getElementById('faceResults');
+        const attendanceListDiv = document.getElementById('attendanceList');
+        const attendanceCountDiv = document.getElementById('attendanceCount');
         const overlaysDiv = document.getElementById('faceOverlays');
 
         let stream = null;
         let isRecognizing = false;
         let recognitionInterval = null;
+        let attendanceList = new Set(); // Use Set to avoid duplicates
+        let sessionAttendance = [];
 
         startBtn.addEventListener('click', startCamera);
         stopBtn.addEventListener('click', stopCamera);
+        takeRegisterBtn.addEventListener('click', takeRegister);
+        clearAttendanceBtn.addEventListener('click', clearAttendance);
+        exportAttendanceBtn.addEventListener('click', exportAttendance);
 
         async function startCamera() {
             try {
                 stream = await navigator.mediaDevices.getUserMedia({ 
                     video: { 
-                        width: 640, 
-                        height: 480,
+                        width: { ideal: 1280 }, 
+                        height: { ideal: 720 },
+                        frameRate: { ideal: 30 },
                         facingMode: 'user'
                     } 
                 });
                 
                 video.srcObject = stream;
-                video.play();
+                
+                // Wait for video to be ready
+                await new Promise((resolve) => {
+                    video.addEventListener('loadedmetadata', () => {
+                        const container = video.parentElement;
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        resolve();
+                    }, { once: true });
+                });
+                
+                await video.play();
                 
                 startBtn.disabled = true;
                 stopBtn.disabled = false;
                 
                 showStatus('Camera started! Auto-detecting faces in real-time...', 'success');
                 
-                // Set canvas size to match video
-                canvas.width = 640;
-                canvas.height = 480;
-                
-                // Start auto-recognition
-                startAutoRecognition();
+                // Start auto-recognition after a short delay
+                setTimeout(() => {
+                    startAutoRecognition();
+                }, 500);
                 
             } catch (error) {
                 showStatus('Error accessing camera: ' + error.message, 'error');
@@ -263,30 +253,42 @@
             stopBtn.disabled = true;
             
             showStatus('Camera stopped', 'info');
-            resultsDiv.style.display = 'none';
             clearOverlays();
             isRecognizing = false;
         }
 
         function startAutoRecognition() {
             recognitionInterval = setInterval(async () => {
-                if (isRecognizing || !stream) return;
+                if (isRecognizing || !stream || video.paused || video.ended) return;
                 
                 await performRecognition();
-            }, 1000); // Recognize every second for real-time feel
+            }, 2000); // Reduced frequency to 2 seconds for smoother video
         }
 
         async function performRecognition() {
-            if (isRecognizing) return;
+            if (isRecognizing || !video.videoWidth || video.readyState < 2) return;
             
             isRecognizing = true;
             
             try {
-                // Draw current video frame to canvas
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                // Use requestAnimationFrame for smoother canvas operations
+                await new Promise(resolve => {
+                    requestAnimationFrame(() => {
+                        // Draw current video frame to canvas with proper scaling
+                        const scale = Math.min(canvas.width / video.videoWidth, canvas.height / video.videoHeight);
+                        const scaledWidth = video.videoWidth * scale;
+                        const scaledHeight = video.videoHeight * scale;
+                        const x = (canvas.width - scaledWidth) / 2;
+                        const y = (canvas.height - scaledHeight) / 2;
+                        
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        ctx.drawImage(video, x, y, scaledWidth, scaledHeight);
+                        resolve();
+                    });
+                });
                 
-                // Convert canvas to base64 image
-                const imageData = canvas.toDataURL('image/jpeg', 0.8);
+                // Convert canvas to base64 image with better quality
+                const imageData = canvas.toDataURL('image/jpeg', 0.7);
                 
                 // Send to server for recognition
                 const response = await fetch('/recognize', {
@@ -300,12 +302,16 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    displayResults(result.faces);
                     drawFaceOverlays(result.faces);
                     
                     if (result.faces.length > 0) {
                         const knownFaces = result.faces.filter(face => face.name !== 'Unknown');
                         const unknownFaces = result.faces.filter(face => face.name === 'Unknown');
+                        
+                        // Auto-mark attendance for recognized faces
+                        knownFaces.forEach(face => {
+                            markAttendance(face.name, face.confidence);
+                        });
                         
                         let statusMessage = `👥 Detecting ${result.faces.length} face(s)`;
                         if (knownFaces.length > 0) {
@@ -335,40 +341,143 @@
             }
         }
 
-        function displayResults(faces) {
-            faceResultsDiv.innerHTML = '';
-            
-            if (faces.length === 0) {
-                faceResultsDiv.innerHTML = '<p>No faces detected in the image.</p>';
-            } else {
-                faces.forEach((face, index) => {
-                    const faceDiv = document.createElement('div');
-                    faceDiv.className = 'face-result';
-                    
-                    const confidence = Math.max(0, Math.min(100, face.confidence));
-                    const isKnown = face.name !== 'Unknown';
-                    
-                    faceDiv.innerHTML = `
-                        <div class="face-info">
-                            <div class="face-name">${face.name}</div>
-                            <div class="face-confidence">Confidence: ${confidence}%</div>
-                        </div>
-                        <div class="confidence-bar">
-                            <div class="confidence-fill" style="width: ${confidence}%"></div>
-                        </div>
-                    `;
-                    
-                    if (isKnown) {
-                        faceDiv.style.borderLeft = '4px solid #48bb78';
-                    } else {
-                        faceDiv.style.borderLeft = '4px solid #e53e3e';
-                    }
-                    
-                    faceResultsDiv.appendChild(faceDiv);
-                });
+        function markAttendance(name, confidence) {
+            if (!attendanceList.has(name)) {
+                attendanceList.add(name);
+                const attendanceRecord = {
+                    name: name,
+                    time: new Date().toLocaleTimeString(),
+                    confidence: Math.round(confidence)
+                };
+                sessionAttendance.push(attendanceRecord);
+                updateAttendanceDisplay();
+                
+                // Show success notification
+                showSuccessNotification(`${name} marked present!`);
             }
+        }
+
+        function updateAttendanceDisplay() {
+            const count = attendanceList.size;
+            attendanceCountDiv.textContent = `${count} Present`;
             
-            resultsDiv.style.display = 'block';
+            if (count === 0) {
+                attendanceListDiv.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-clipboard-list text-4xl mb-4 opacity-50"></i>
+                        <p class="font-medium">No attendance marked yet</p>
+                        <p class="text-sm">Start camera to begin tracking</p>
+                    </div>
+                `;
+            } else {
+                attendanceListDiv.innerHTML = sessionAttendance.map(record => `
+                    <div class="flex items-center justify-between p-2.5 bg-white rounded-lg border border-gray-200 shadow-sm">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-9 h-9 bg-green-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user-check text-white text-sm"></i>
+                            </div>
+                            <div>
+                                <div class="font-semibold text-gray-900 text-sm">${record.name}</div>
+                                <div class="text-xs text-gray-600">Marked at ${record.time}</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-xs font-medium text-green-600 bg-green-100 px-2 py-1 rounded-full">
+                                ${record.confidence}%
+                            </span>
+                            <i class="fas fa-check-circle text-green-500 text-sm"></i>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function showSuccessNotification(message) {
+            // Create a temporary notification
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full opacity-0 transition-all duration-300';
+            notification.innerHTML = `
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-check-circle"></i>
+                    <span class="font-medium">${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full', 'opacity-0');
+            }, 100);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.classList.add('translate-x-full', 'opacity-0');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        function takeRegister() {
+            if (sessionAttendance.length === 0) {
+                showStatus('No faces detected for register. Please start camera first.', 'error');
+                return;
+            }
+
+            // Here you could send the attendance data to the server
+            const registerData = {
+                date: new Date().toLocaleDateString(),
+                time: new Date().toLocaleTimeString(),
+                attendance: sessionAttendance
+            };
+
+            console.log('Register taken:', registerData);
+            showStatus(`Register completed! ${sessionAttendance.length} people marked present.`, 'success');
+            
+            // You could also download as CSV or send to server here
+            downloadAttendanceCSV();
+        }
+
+        function clearAttendance() {
+            if (confirm('Are you sure you want to clear all attendance records?')) {
+                attendanceList.clear();
+                sessionAttendance = [];
+                updateAttendanceDisplay();
+                showStatus('Attendance cleared successfully.', 'info');
+            }
+        }
+
+        function exportAttendance() {
+            if (sessionAttendance.length === 0) {
+                showStatus('No attendance data to export.', 'error');
+                return;
+            }
+            downloadAttendanceCSV();
+        }
+
+        function downloadAttendanceCSV() {
+            const csvContent = [
+                ['Name', 'Time', 'Confidence', 'Date'],
+                ...sessionAttendance.map(record => [
+                    record.name,
+                    record.time,
+                    `${record.confidence}%`,
+                    new Date().toLocaleDateString()
+                ])
+            ].map(row => row.join(',')).join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `attendance_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            showStatus('Attendance exported successfully!', 'success');
         }
 
         function drawFaceOverlays(faces) {
@@ -378,20 +487,55 @@
                 const [x, y, w, h] = face.coordinates;
                 const isKnown = face.name !== 'Unknown';
                 
+                // Get video container dimensions
+                const videoContainer = video.parentElement;
+                const containerRect = videoContainer.getBoundingClientRect();
+                const containerWidth = videoContainer.offsetWidth;
+                const containerHeight = videoContainer.offsetHeight;
+                
+                // Calculate video display dimensions (accounting for object-cover)
+                const videoAspect = video.videoWidth / video.videoHeight;
+                const containerAspect = containerWidth / containerHeight;
+                
+                let displayWidth, displayHeight, offsetX, offsetY;
+                
+                if (videoAspect > containerAspect) {
+                    // Video is wider - height fills container, width is cropped
+                    displayHeight = containerHeight;
+                    displayWidth = displayHeight * videoAspect;
+                    offsetX = (containerWidth - displayWidth) / 2;
+                    offsetY = 0;
+                } else {
+                    // Video is taller - width fills container, height is cropped
+                    displayWidth = containerWidth;
+                    displayHeight = displayWidth / videoAspect;
+                    offsetX = 0;
+                    offsetY = (containerHeight - displayHeight) / 2;
+                }
+                
+                // Scale coordinates from canvas to display
+                const scaleX = displayWidth / canvas.width;
+                const scaleY = displayHeight / canvas.height;
+                
+                const scaledX = (x * scaleX) + offsetX;
+                const scaledY = (y * scaleY) + offsetY;
+                const scaledW = w * scaleX;
+                const scaledH = h * scaleY;
+                
                 // Create face rectangle overlay
                 const overlay = document.createElement('div');
                 overlay.className = 'face-overlay';
-                overlay.style.left = x + 'px';
-                overlay.style.top = y + 'px';
-                overlay.style.width = w + 'px';
-                overlay.style.height = h + 'px';
+                overlay.style.left = scaledX + 'px';
+                overlay.style.top = scaledY + 'px';
+                overlay.style.width = scaledW + 'px';
+                overlay.style.height = scaledH + 'px';
                 overlay.style.borderColor = isKnown ? '#00ff00' : '#ff0000';
                 
                 // Create label
                 const label = document.createElement('div');
                 label.className = 'face-label';
-                label.style.left = x + 'px';
-                label.style.top = (y - 25) + 'px';
+                label.style.left = scaledX + 'px';
+                label.style.top = (scaledY - 25) + 'px';
                 label.style.background = isKnown ? 'rgba(0, 255, 0, 0.8)' : 'rgba(255, 0, 0, 0.8)';
                 label.textContent = `${face.name} (${Math.round(face.confidence)}%)`;
                 
@@ -405,9 +549,40 @@
         }
 
         function showStatus(message, type) {
-            statusDiv.textContent = message;
-            statusDiv.className = `status ${type}`;
+            let bgColor, borderColor, textColor, icon;
+            
+            switch(type) {
+                case 'success':
+                    bgColor = 'bg-green-50';
+                    borderColor = 'border-green-200';
+                    textColor = 'text-green-700';
+                    icon = 'fas fa-check-circle';
+                    break;
+                case 'error':
+                    bgColor = 'bg-red-50';
+                    borderColor = 'border-red-200';
+                    textColor = 'text-red-700';
+                    icon = 'fas fa-exclamation-circle';
+                    break;
+                case 'info':
+                default:
+                    bgColor = 'bg-blue-50';
+                    borderColor = 'border-blue-200';
+                    textColor = 'text-blue-700';
+                    icon = 'fas fa-info-circle';
+            }
+            
+            statusDiv.className = `flex items-center justify-center p-3 ${bgColor} border ${borderColor} rounded-lg ${textColor} mt-4 text-sm`;
+            statusDiv.innerHTML = `
+                <i class="${icon} mr-2 text-base"></i>
+                <span class="font-medium">${message}</span>
+            `;
         }
+
+        // Initialize attendance display on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateAttendanceDisplay();
+        });
 
         // Cleanup on page unload
         window.addEventListener('beforeunload', () => {
