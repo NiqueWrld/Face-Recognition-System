@@ -27,6 +27,11 @@
             border-radius: 5px;
             pointer-events: none;
         }
+        .face-overlay.already-marked {
+            border: 3px solid #fbbf24;
+            border-style: dashed;
+            animation: pulse-border 2s infinite;
+        }
         .face-label {
             position: absolute;
             background: rgba(0, 255, 0, 0.8);
@@ -36,6 +41,13 @@
             font-weight: bold;
             border-radius: 3px;
             white-space: nowrap;
+        }
+        .face-label.already-marked {
+            background: rgba(251, 191, 36, 0.9);
+        }
+        @keyframes pulse-border {
+            0%, 100% { border-color: #fbbf24; }
+            50% { border-color: #f59e0b; }
         }
         .confidence-fill {
             height: 100%;
@@ -313,9 +325,15 @@
                             markAttendance(face.name, face.confidence);
                         });
                         
+                        const alreadyPresentFaces = knownFaces.filter(face => attendanceList.has(face.name));
+                        const newFaces = knownFaces.filter(face => !attendanceList.has(face.name));
+                        
                         let statusMessage = `👥 Detecting ${result.faces.length} face(s)`;
-                        if (knownFaces.length > 0) {
-                            statusMessage += ` - Recognized: ${knownFaces.map(f => f.name).join(', ')}`;
+                        if (newFaces.length > 0) {
+                            statusMessage += ` - New: ${newFaces.map(f => f.name).join(', ')}`;
+                        }
+                        if (alreadyPresentFaces.length > 0) {
+                            statusMessage += ` - Already Present: ${alreadyPresentFaces.map(f => f.name).join(', ')}`;
                         }
                         if (unknownFaces.length > 0) {
                             statusMessage += ` - ${unknownFaces.length} unknown`;
@@ -486,6 +504,7 @@
             faces.forEach((face, index) => {
                 const [x, y, w, h] = face.coordinates;
                 const isKnown = face.name !== 'Unknown';
+                const isAlreadyMarked = isKnown && attendanceList.has(face.name);
                 
                 // Get video container dimensions
                 const videoContainer = video.parentElement;
@@ -522,22 +541,45 @@
                 const scaledW = w * scaleX;
                 const scaledH = h * scaleY;
                 
-                // Create face rectangle overlay
+                // Create face rectangle overlay with different styles based on status
                 const overlay = document.createElement('div');
-                overlay.className = 'face-overlay';
+                let overlayClass = 'face-overlay';
+                let borderColor, labelBg, labelText;
+                
+                if (!isKnown) {
+                    // Unknown face - red border
+                    borderColor = '#ff0000';
+                    labelBg = 'rgba(255, 0, 0, 0.8)';
+                    labelText = `${face.name} (${Math.round(face.confidence)}%)`;
+                } else if (isAlreadyMarked) {
+                    // Already marked - yellow pulsing dashed border
+                    overlayClass += ' already-marked';
+                    labelBg = 'rgba(251, 191, 36, 0.9)';
+                    labelText = `${face.name} ✓ Present (${Math.round(face.confidence)}%)`;
+                } else {
+                    // Known but not marked - green border
+                    borderColor = '#00ff00';
+                    labelBg = 'rgba(0, 255, 0, 0.8)';
+                    labelText = `${face.name} (${Math.round(face.confidence)}%)`;
+                }
+                
+                overlay.className = overlayClass;
                 overlay.style.left = scaledX + 'px';
                 overlay.style.top = scaledY + 'px';
                 overlay.style.width = scaledW + 'px';
                 overlay.style.height = scaledH + 'px';
-                overlay.style.borderColor = isKnown ? '#00ff00' : '#ff0000';
                 
-                // Create label
+                if (borderColor) {
+                    overlay.style.borderColor = borderColor;
+                }
+                
+                // Create label with appropriate styling
                 const label = document.createElement('div');
-                label.className = 'face-label';
+                label.className = isAlreadyMarked ? 'face-label already-marked' : 'face-label';
                 label.style.left = scaledX + 'px';
                 label.style.top = (scaledY - 25) + 'px';
-                label.style.background = isKnown ? 'rgba(0, 255, 0, 0.8)' : 'rgba(255, 0, 0, 0.8)';
-                label.textContent = `${face.name} (${Math.round(face.confidence)}%)`;
+                label.style.background = labelBg;
+                label.textContent = labelText;
                 
                 overlaysDiv.appendChild(overlay);
                 overlaysDiv.appendChild(label);
