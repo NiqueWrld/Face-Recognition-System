@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Face - Face Recognition System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0ea5e9',
+                        secondary: '#0284c7',
+                        accent: '#f8fafc',
+                        dark: '#1e293b'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .face-overlay {
+            position: absolute;
+            border: 3px solid #00ff00;
+            border-radius: 5px;
+            pointer-events: none;
+        }
+        .countdown {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            font-weight: bold;
+            color: #ff0000;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            display: none;
+        }
+        #canvas {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-accent min-h-screen">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-primary to-secondary shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+                        <i class="fas fa-user-plus text-2xl text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-bold text-white">Register New Face</h1>
+                        <p class="text-sky-100 text-sm hidden sm:block">Add Identity to Recognition System</p>
+                    </div>
+                </div>
+                <div class="text-right text-white/80 text-sm hidden md:block">
+                    <div class="font-medium">{{ current_time or "2025-09-15 10:49:43" }}</div>
+                    <div class="text-xs text-sky-100">UTC</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Main Card -->
+        <div class="bg-white rounded-2xl shadow-sm border border-sky-100 overflow-hidden">
+            <!-- Instructions Section -->
+            <div class="p-6 bg-gradient-to-r from-sky-50 to-blue-50 border-b border-sky-100">
+                <h2 class="text-xl font-semibold text-dark mb-6 flex items-center">
+                    <i class="fas fa-info-circle text-primary mr-3"></i>
+                    Registration Instructions
+                </h2>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-lg p-4 border border-sky-100">
+                        <h3 class="text-lg font-semibold text-primary mb-3 flex items-center">
+                            <i class="fas fa-list-ol text-sm mr-2"></i>
+                            Registration Steps
+                        </h3>
+                        <ol class="space-y-2 text-sm text-gray-700">
+                            <li class="flex items-start">
+                                <span class="bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2 mt-0.5">1</span>
+                                <span><strong>Enter Name:</strong> Type the person's full name below</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2 mt-0.5">2</span>
+                                <span><strong>Click Next:</strong> Press the "Next" button to start photo capture</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2 mt-0.5">3</span>
+                                <span><strong>Position Face:</strong> Center your face in the camera view</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2 mt-0.5">4</span>
+                                <span><strong>Auto Capture:</strong> System will automatically take 3 high-quality photos</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2 mt-0.5">5</span>
+                                <span><strong>Complete:</strong> Registration completes automatically after all photos</span>
+                            </li>
+                        </ol>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg p-4 border border-sky-100">
+                        <h3 class="text-lg font-semibold text-primary mb-3 flex items-center">
+                            <i class="fas fa-camera text-sm mr-2"></i>
+                            Photo Requirements
+                        </h3>
+                        <ul class="space-y-2 text-sm text-gray-700">
+                            <li class="flex items-start">
+                                <i class="fas fa-user text-primary text-xs mr-2 mt-1"></i>
+                                <span><strong>Single Person:</strong> Only one face should be visible in the frame</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-expand-arrows-alt text-primary text-xs mr-2 mt-1"></i>
+                                <span><strong>Face Size:</strong> Keep your face medium-sized (not too close or far from camera)</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-sun text-primary text-xs mr-2 mt-1"></i>
+                                <span><strong>Quality:</strong> Ensure good lighting and face the camera directly</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-hand-paper text-primary text-xs mr-2 mt-1"></i>
+                                <span><strong>Stability:</strong> Hold still when the green "Ready" box appears</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-shield-alt text-primary text-xs mr-2 mt-1"></i>
+                                <span><strong>Unique Registration:</strong> Each person can only be registered once (duplicates are automatically prevented)</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <h4 class="font-semibold text-dark mb-2 flex items-center">
+                        <i class="fas fa-eye text-primary mr-2"></i>
+                        Visual Indicators
+                    </h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 bg-green-500 rounded border-2 border-green-500 mr-2"></div>
+                            <span><strong>Green Solid:</strong> Perfect! Photo will be captured</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 border-2 border-dashed border-orange-500 mr-2"></div>
+                            <span><strong>Orange Dashed:</strong> Needs adjustment</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 border-2 border-dashed border-red-500 mr-2"></div>
+                            <span><strong>Red Dashed:</strong> Invalid position/quality</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 bg-red-500 rounded border-2 border-red-500 mr-2"></div>
+                            <span><strong>Red "DUPLICATE":</strong> Face already registered</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Registration Form -->
+            <div class="p-6">
+                <form id="registerForm" class="space-y-6">
+                    <!-- Name Input Section -->
+                    <div class="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                        <h3 class="text-lg font-semibold text-dark mb-4 flex items-center">
+                            <i class="fas fa-user text-primary mr-3"></i>
+                            Identity Information
+                        </h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Person's Full Name</label>
+                                <input type="text" id="name" name="name" required 
+                                       placeholder="Enter the person's full name"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors text-lg">
+                            </div>
+                            
+                            <button type="button" id="nextBtn" 
+                                    class="w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white font-medium rounded-lg hover:shadow-lg transition-all duration-200 transform hover:-translate-y-1" 
+                                    style="display: none;">
+                                <i class="fas fa-arrow-right mr-2"></i>
+                                Next - Start Photo Capture
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Camera Section -->
+                    <div id="cameraContainer" class="bg-gray-50 rounded-xl p-6 border border-gray-200" style="display: none;">
+                        <h3 class="text-lg font-semibold text-dark mb-4 flex items-center">
+                            <i class="fas fa-camera text-primary mr-3"></i>
+                            Photo Capture
+                        </h3>
+                        
+                        <div class="text-center space-y-6">
+                            <div class="relative inline-block rounded-2xl overflow-hidden shadow-lg border-4 border-white">
+                                <video id="video" autoplay muted playsinline class="w-96 h-72 bg-gray-900"></video>
+                                <canvas id="canvas"></canvas>
+                                <div id="faceOverlay" class="absolute inset-0 pointer-events-none"></div>
+                                <div id="countdown" class="countdown"></div>
+                            </div>
+                            
+                            <div id="captureProgress" class="space-y-3" style="display: none;">
+                                <div class="flex items-center justify-center space-x-2">
+                                    <i class="fas fa-camera text-primary"></i>
+                                    <span class="font-medium text-gray-700">Capturing photos: <span id="captureCount" class="text-primary">0</span>/3</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                                    <div id="progressFill" class="h-full bg-gradient-to-r from-primary to-secondary transition-all duration-300 ease-out" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            
+                            <div id="capturedImages" class="flex justify-center gap-4 flex-wrap"></div>
+                            
+                            <div class="flex justify-center">
+                                <button type="button" id="retakePhotos" 
+                                        class="inline-flex items-center px-6 py-3 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors shadow-sm" 
+                                        style="display: none;">
+                                    <i class="fas fa-redo mr-2"></i>
+                                    Start Over
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Loading Section -->
+                    <div id="loading" class="text-center py-8 bg-blue-50 rounded-xl border border-blue-200" style="display: none;">
+                        <div class="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4">
+                            <div class="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                        </div>
+                        <p class="text-gray-700 font-medium">Checking for duplicates and processing registration...</p>
+                    </div>
+                    
+                    <!-- Message Section -->
+                    <div id="message"></div>
+                    
+                    <!-- Navigation -->
+                    <div class="flex justify-center">
+                        <a href="/" class="inline-flex items-center px-6 py-3 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors shadow-sm">
+                            <i class="fas fa-home mr-2"></i>
+                            Back to Home
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-12 py-6 border-t border-sky-100 bg-white/50">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-gray-600 text-sm">
+                © 2025 Face Recognition System | Powered by AI & OpenCV
+            </p>
+        </div>
+    </footer>
+    </div>
+
+    <script>
+        const nameInput = document.getElementById('name');
+        const form = document.getElementById('registerForm');
+        const loading = document.getElementById('loading');
+        const messageDiv = document.getElementById('message');
+        const cameraContainer = document.getElementById('cameraContainer');
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const nextBtn = document.getElementById('nextBtn');
+        const retakeBtn = document.getElementById('retakePhotos');
+        const captureProgress = document.getElementById('captureProgress');
+        const captureCount = document.getElementById('captureCount');
+        const progressFill = document.getElementById('progressFill');
+        const capturedImagesDiv = document.getElementById('capturedImages');
+        const faceOverlay = document.getElementById('faceOverlay');
+        const countdown = document.getElementById('countdown');
+
+        let stream = null;
+        let capturedPhotos = [];
+        let isCapturing = false;
+        let faceDetectionInterval = null;
+        let faceDetected = false;
+        let stableFrameCount = 0;
+
+        // Show Next button when name is entered
+        nameInput.addEventListener('input', function() {
+            const name = nameInput.value.trim();
+            if (name) {
+                nextBtn.style.display = 'block';
+                showMessage('✅ Name entered! Click "Next" to start photo capture.', 'success');
+            } else {
+                nextBtn.style.display = 'none';
+                cameraContainer.style.display = 'none';
+                messageDiv.innerHTML = '';
+                // Stop camera if name is cleared
+                if (stream) {
+                    stopCamera();
+                }
+            }
+        });
+
+        nextBtn.addEventListener('click', function() {
+            cameraContainer.style.display = 'block';
+            nextBtn.style.display = 'none';
+            startCamera();
+        });
+
+        retakeBtn.addEventListener('click', retakePhotos);
+
+        async function startCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        width: 400, 
+                        height: 300,
+                        facingMode: 'user'
+                    } 
+                });
+                
+                video.srcObject = stream;
+                video.play();
+                
+                canvas.width = 400;
+                canvas.height = 300;
+                
+                captureProgress.style.display = 'block';
+                
+                showMessage('Camera started! Position your face and we\'ll automatically capture 3 photos', 'success');
+                
+                // Start face detection and auto-capture
+                startFaceDetectionAndCapture();
+                
+            } catch (error) {
+                showMessage('❌ Camera access denied. Please refresh the page and allow camera permissions.', 'error');
+                console.error('Camera error:', error);
+            }
+        }
+
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+            
+            if (faceDetectionInterval) {
+                clearInterval(faceDetectionInterval);
+                faceDetectionInterval = null;
+            }
+            
+            video.srcObject = null;
+            
+            // Clean up state
+            resetFaceDetectionState();
+            isCapturing = false;
+        }
+
+        function retakePhotos() {
+            capturedPhotos = [];
+            capturedImagesDiv.innerHTML = '';
+            captureCount.textContent = '0';
+            progressFill.style.width = '0%';
+            retakeBtn.style.display = 'none';
+            cameraContainer.style.display = 'none';
+            isCapturing = false;
+            
+            // Stop camera if running
+            if (stream) {
+                stopCamera();
+            }
+            
+            // Show Next button again
+            if (nameInput.value.trim()) {
+                nextBtn.style.display = 'block';
+                showMessage('🔄 Ready to start over. Click "Next" to begin photo capture again.', 'success');
+            }
+        }
+
+        function resetFaceDetectionState() {
+            faceDetected = false;
+            stableFrameCount = 0;
+            hideCountdown();
+            hideFaceOverlay();
+        }
+
+        function startFaceDetectionAndCapture() {
+            const requiredStableFrames = 5; // Need 5 consecutive frames with good face detection
+            
+            // Reset state when starting
+            resetFaceDetectionState();
+            
+            faceDetectionInterval = setInterval(async () => {
+                // Stop only when we have all 3 photos
+                if (capturedPhotos.length >= 3) {
+                    clearInterval(faceDetectionInterval);
+                    faceDetectionInterval = null;
+                    return;
+                }
+                
+                // Skip detection during capture process but don't stop the interval
+                if (isCapturing) {
+                    return;
+                }
+                
+                // Draw current frame to canvas for face detection
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const imageData = canvas.toDataURL('image/jpeg', 0.8);
+                
+                try {
+                    // Check for faces
+                    const response = await fetch('/detect_faces', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ image: imageData })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    // Check for duplicate face detection
+                    if (result.duplicate_detected) {
+                        hideFaceOverlay();
+                        showMessage(`❌ This face is already registered as: ${result.faces[0].duplicate_name}. Each person can only be registered once.`, 'error');
+                        stableFrameCount = 0;
+                        faceDetected = false;
+                        hideCountdown();
+                        return;
+                    }
+                    
+                    if (result.success && result.faces.length === 1) {
+                        const face = result.faces[0];
+                        const coordinates = face.coordinates; // This is already a JavaScript array
+                        
+                        // Validate face quality requirements
+                        const isValidFace = validateFaceQuality(coordinates, canvas.width, canvas.height);
+                        
+                        if (isValidFace) {
+                            // Face detected and meets requirements
+                            showFaceOverlay(coordinates, 'good');
+                            stableFrameCount++;
+                            
+                            if (stableFrameCount >= requiredStableFrames && !faceDetected) {
+                                faceDetected = true;
+                                showMessage('Perfect! Hold still...', 'success');
+                                startCountdown();
+                            }
+                        } else {
+                            // Face detected but doesn't meet quality requirements
+                            showFaceOverlay(coordinates, 'warning');
+                            showFaceInstructions(coordinates, canvas.width, canvas.height);
+                            stableFrameCount = 0;
+                            faceDetected = false;
+                            hideCountdown();
+                        }
+                    } else if (result.faces.length > 1) {
+                        // Multiple faces detected
+                        hideFaceOverlay();
+                        showMessage('Multiple faces detected. Please ensure only one person is in frame.', 'error');
+                        stableFrameCount = 0;
+                        faceDetected = false;
+                        hideCountdown();
+                    } else {
+                        // No face detected
+                        hideFaceOverlay();
+                        showMessage('Position your face in the camera view', 'info');
+                        stableFrameCount = 0;
+                        faceDetected = false;
+                        hideCountdown();
+                    }
+                } catch (error) {
+                    console.error('Face detection error:', error);
+                    stableFrameCount = 0;
+                    faceDetected = false;
+                }
+            }, 200); // Check every 200ms (reduced frequency for stability)
+        }
+
+        function validateFaceQuality(coordinates, frameWidth, frameHeight) {
+            const [x, y, w, h] = coordinates;
+            
+            // Face should be at least 80x80 pixels for good quality
+            if (w < 80 || h < 80) return false;
+            
+            // Face should not be too large (max 60% of frame)
+            if (w > frameWidth * 0.6 || h > frameHeight * 0.6) return false;
+            
+            // Face should be reasonably centered (not too close to edges)
+            const centerX = x + w / 2;
+            const centerY = y + h / 2;
+            const margin = 0.15; // 15% margin from edges
+            
+            if (centerX < frameWidth * margin || centerX > frameWidth * (1 - margin)) return false;
+            if (centerY < frameHeight * margin || centerY > frameHeight * (1 - margin)) return false;
+            
+            // Face should have good aspect ratio (not too stretched)
+            const aspectRatio = w / h;
+            if (aspectRatio < 0.7 || aspectRatio > 1.4) return false;
+            
+            return true;
+        }
+
+        function showFaceInstructions(coordinates, frameWidth, frameHeight) {
+            const [x, y, w, h] = coordinates;
+            const centerX = x + w / 2;
+            const centerY = y + h / 2;
+            
+            let instruction = '';
+            
+            // Size instructions
+            if (w < 80 || h < 80) {
+                instruction = 'Move closer to the camera';
+            } else if (w > frameWidth * 0.6 || h > frameHeight * 0.6) {
+                instruction = 'Move away from the camera';
+            }
+            // Position instructions
+            else if (centerX < frameWidth * 0.15) {
+                instruction = 'Move to the right';
+            } else if (centerX > frameWidth * 0.85) {
+                instruction = 'Move to the left';
+            } else if (centerY < frameHeight * 0.15) {
+                instruction = 'Move down a bit';
+            } else if (centerY > frameHeight * 0.85) {
+                instruction = 'Move up a bit';
+            }
+            // Aspect ratio instructions
+            else {
+                instruction = 'Face the camera directly';
+            }
+            
+            showMessage(instruction, 'info');
+        }
+
+        function startCountdown() {
+            // Clear any existing countdown
+            if (window.activeCountdown) {
+                clearInterval(window.activeCountdown);
+            }
+            
+            let count = 3;
+            countdown.textContent = count;
+            countdown.style.display = 'block';
+            
+            window.activeCountdown = setInterval(() => {
+                count--;
+                if (count > 0) {
+                    countdown.textContent = count;
+                } else {
+                    countdown.textContent = 'SMILE!';
+                    setTimeout(() => {
+                        capturePhoto();
+                        hideCountdown();
+                    }, 500);
+                    clearInterval(window.activeCountdown);
+                    window.activeCountdown = null;
+                }
+            }, 1000);
+        }
+
+        function hideCountdown() {
+            countdown.style.display = 'none';
+            // Clear any active countdown
+            if (window.activeCountdown) {
+                clearInterval(window.activeCountdown);
+                window.activeCountdown = null;
+            }
+        }
+
+        function showFaceOverlay(coordinates, quality = 'good') {
+            const [x, y, w, h] = coordinates;
+            
+            let borderColor = '#00ff00'; // Green for good
+            let borderStyle = 'solid';
+            let label = '✓ Ready';
+            
+            if (quality === 'warning') {
+                borderColor = '#ffa500'; // Orange for needs adjustment
+                borderStyle = 'dashed';
+                label = '⚠ Adjust';
+            } else if (quality === 'bad') {
+                borderColor = '#ff0000'; // Red for bad
+                borderStyle = 'dashed';
+                label = '✗ Invalid';
+            } else if (quality === 'duplicate') {
+                borderColor = '#ff0000'; // Red for duplicate
+                borderStyle = 'solid';
+                label = '🚫 DUPLICATE';
+            }
+            
+            faceOverlay.innerHTML = `
+                <div style="
+                    position: absolute;
+                    left: ${x}px;
+                    top: ${y}px;
+                    width: ${w}px;
+                    height: ${h}px;
+                    border: 3px ${borderStyle} ${borderColor};
+                    border-radius: 5px;
+                    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+                "></div>
+                <div style="
+                    position: absolute;
+                    left: ${x + w/2 - 30}px;
+                    top: ${y - 30}px;
+                    background: ${borderColor};
+                    color: white;
+                    padding: 4px 8px;
+                    border-radius: 12px;
+                    font-size: 12px;
+                    font-weight: bold;
+                    white-space: nowrap;
+                ">${label}</div>
+            `;
+        }
+
+        function hideFaceOverlay() {
+            faceOverlay.innerHTML = '';
+        }
+
+        async function capturePhoto() {
+            if (capturedPhotos.length >= 3) return;
+            
+            isCapturing = true;
+            
+            // Capture current frame
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = canvas.toDataURL('image/jpeg', 0.8);
+            
+            // Final validation before accepting the photo
+            try {
+                const response = await fetch('/detect_faces', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ image: imageData })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success && result.faces.length === 1) {
+                    const face = result.faces[0];
+                    const coordinates = face.coordinates; // Already a JavaScript array
+                    const isValid = validateFaceQuality(coordinates, canvas.width, canvas.height);
+                    
+                    if (isValid) {
+                        // Photo meets all requirements - accept it
+                        capturedPhotos.push(imageData);
+                        
+                        // Update UI
+                        const photoCount = capturedPhotos.length;
+                        captureCount.textContent = photoCount;
+                        progressFill.style.width = `${(photoCount / 3) * 100}%`;
+                        
+                        // Add thumbnail with success indicator
+                        const imgContainer = document.createElement('div');
+                        imgContainer.className = 'relative';
+                        
+                        const img = document.createElement('img');
+                        img.src = imageData;
+                        img.className = 'w-20 h-20 rounded-xl border-4 border-green-500 object-cover shadow-lg';
+                        img.title = `Photo ${photoCount} - High Quality`;
+                        
+                        const checkmark = document.createElement('div');
+                        checkmark.className = 'absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center border-2 border-white';
+                        checkmark.innerHTML = '<i class="fas fa-check text-white text-xs"></i>';
+                        
+                        imgContainer.appendChild(img);
+                        imgContainer.appendChild(checkmark);
+                        capturedImagesDiv.appendChild(imgContainer);
+                        
+                        if (photoCount >= 3) {
+                            showMessage('✅ All 3 high-quality photos captured! Auto-completing registration...', 'success');
+                            stopCamera(); // Stop camera directly
+                            
+                            // Auto-complete registration after 2 seconds
+                            setTimeout(() => {
+                                submitRegistration();
+                            }, 2000);
+                        } else {
+                            showMessage(`High-quality photo ${photoCount}/3 captured! Position for the next one...`, 'success');
+                            // Wait 3 seconds before next capture to allow repositioning
+                            setTimeout(() => {
+                                isCapturing = false;
+                                // Reset face detection state for next capture
+                                resetFaceDetectionState();
+                            }, 3000);
+                        }
+                        
+                        return; // Photo successfully captured
+                    }
+                }
+                
+                // Photo doesn't meet requirements - retry
+                showMessage('Photo quality not sufficient. Repositioning for better angle...', 'info');
+                setTimeout(() => {
+                    isCapturing = false;
+                    resetFaceDetectionState();
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Photo validation error:', error);
+                showMessage('Error validating photo. Repositioning...', 'info');
+                setTimeout(() => {
+                    isCapturing = false;
+                    resetFaceDetectionState();
+                }, 1500);
+            }
+        }
+
+        // Auto-submit registration function
+        function submitRegistration() {
+            const name = nameInput.value.trim();
+            
+            if (!name) {
+                showMessage('Error: Name is required', 'error');
+                return;
+            }
+            
+            if (capturedPhotos.length !== 3) {
+                showMessage('Error: All 3 photos are required', 'error');
+                return;
+            }
+            
+            // Show loading with duplicate checking message
+            loading.style.display = 'block';
+            messageDiv.innerHTML = '';
+            showMessage('🔍 Checking for duplicate faces and processing registration...', 'info');
+            
+            // Submit registration with all photos
+            fetch('/register_multiple', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: name,
+                    images: capturedPhotos
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                loading.style.display = 'none';
+                
+                if (data.success) {
+                    showMessage(`✅ ${data.message} Redirecting to home...`, 'success');
+                    
+                    // Redirect to home after 3 seconds
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 3000);
+                } else {
+                    showMessage(`❌ Registration failed: ${data.message}`, 'error');
+                    // Show retake option if registration fails
+                    retakeBtn.style.display = 'inline-block';
+                }
+            })
+            .catch(error => {
+                loading.style.display = 'none';
+                showMessage(`❌ Error: ${error.message}`, 'error');
+                // Show retake option if there's an error
+                retakeBtn.style.display = 'inline-block';
+            });
+        }
+
+        function showMessage(text, type) {
+            let bgColor, borderColor, textColor, icon;
+            
+            switch(type) {
+                case 'success':
+                    bgColor = 'bg-green-50';
+                    borderColor = 'border-green-200';
+                    textColor = 'text-green-700';
+                    icon = 'fas fa-check-circle';
+                    break;
+                case 'error':
+                    bgColor = 'bg-red-50';
+                    borderColor = 'border-red-200';
+                    textColor = 'text-red-700';
+                    icon = 'fas fa-exclamation-circle';
+                    break;
+                case 'info':
+                    bgColor = 'bg-blue-50';
+                    borderColor = 'border-blue-200';
+                    textColor = 'text-blue-700';
+                    icon = 'fas fa-info-circle';
+                    break;
+                default:
+                    bgColor = 'bg-gray-50';
+                    borderColor = 'border-gray-200';
+                    textColor = 'text-gray-700';
+                    icon = 'fas fa-info-circle';
+            }
+            
+            messageDiv.innerHTML = `
+                <div class="flex items-center p-4 ${bgColor} border ${borderColor} rounded-lg ${textColor}">
+                    <i class="${icon} mr-3 text-lg"></i>
+                    <span class="font-medium">${text}</span>
+                </div>
+            `;
+        }
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+        });
+    </script>
+</body>
+</html>
